@@ -1,7 +1,4 @@
 # Tortuga
-Self-righting, dust-tolerant scout rover. Mechanical engineering portfolio project.
-[README.md](https://github.com/user-attachments/files/28533366/README.md)
-# Scout Rover
 
 A self-righting, dust-tolerant scout rover designed and built as a single-semester engineering portfolio project. Built to investigate two real challenges in Mars surface robotics — **flip recovery** and **dust ingress** — at hobby scale, using analog testing in the Sonoran Desert (Tucson, AZ).
 
