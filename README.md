@@ -170,4 +170,3 @@ Detailed engineering calculations live in `/docs/calcs/`. Summary:
 ## Contact
 
 Rodolfo Yanez — Mechanical Engineering, University of Arizona
-yanezrod21@gmail.com
