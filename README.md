@@ -4,7 +4,7 @@ A self-righting, dust-tolerant scout rover. Mechanical engineering portfolio pro
 
 **Built by:** Rodolfo Yanez — Mechanical Engineering, University of Arizona
 **Status:** Phase 1 — chassis CAD complete, electronics integration next
-**Timeline:** Spring 2026
+**Timeline:** Summer 2026
 
 ---
 
@@ -52,7 +52,7 @@ Full bill of materials in [`docs/bom.md`](docs/bom.md).
 | 1 | Drive + obstacle avoidance + camera stream | In progress |
 | 1.5 | Self-righting + sealed drivetrain | Planned |
 | 2 | Sonoran Desert field testing + dust analysis | Planned |
-| 3 | GPS waypoint navigation, sample-collection gripper | Post-semester |
+| 3 | GPS waypoint navigation, sample-collection gripper | Fall |
 
 ---
 
