@@ -1,183 +1,70 @@
 # Tortuga
 
-A self-righting, dust-tolerant scout rover designed and built as a single-semester engineering portfolio project. Built to investigate two real challenges in Mars surface robotics — **flip recovery** and **dust ingress** — at hobby scale, using analog testing in the Sonoran Desert (Tucson, AZ).
+A self-righting, dust-tolerant scout rover. Mechanical engineering portfolio project.
 
-**Author:** Rodolfo Yanez — Mechanical Engineering, University of Arizona
-**Status:** In development — Phase 1
-**Target completion:** End of Summer 2026 
-
----
-
-## Why This Project Exists
-
-Most student rovers are kit assemblies: drop-in chassis, hobby motors, off-the-shelf brain, demo on a clean floor. They demonstrate *integration*, not *engineering*.
-
-This project takes a different approach. It picks two failure modes that have ended real Mars missions and treats them as the central design problem:
-
-1. **Loss of mobility from inversion.** A flipped rover is a dead rover unless it can recover autonomously. Curiosity and Perseverance avoid this problem with low, wide chassis geometry — but that geometry limits the terrain they can attempt. Smaller scout-class rovers need active recovery.
-
-2. **Dust ingress.** Martian regolith is electrostatically charged and abrasive. Spirit's wheel actuators degraded from dust exposure. JPL invests significant engineering effort in seals, filters, and dust-tolerant mechanisms. Hobby rovers ignore this entirely.
-
-The goal is not to replicate JPL hardware. The goal is to take JPL-class *problems*, scope them down to hobby budget and timeline, and document the engineering decisions made along the way.
+**Built by:** Rodolfo Yanez — Mechanical Engineering, University of Arizona
+**Status:** Phase 1 — chassis CAD complete, electronics integration next
+**Timeline:** Spring 2026
 
 ---
 
-## Design Goals (Measurable)
+## What problem does this solve?
 
-| # | Goal | Target | Status |
-|---|------|--------|--------|
-| 1 | Autonomous obstacle avoidance | No collision over 5-min run | Pending |
-| 2 | Live camera stream | <500 ms latency, 480p min | Pending |
-| 3 | Self-right from any inverted orientation | 100% success over 10 trials | Pending |
-| 4 | Sealed drivetrain | Operate 2+ hours in desert sand without bearing/motor degradation | Pending |
-| 5 | Thermal tolerance | Continuous operation in 95°F+ ambient | Pending |
-| 6 | Battery life | ≥45 min continuous drive | Pending |
+Most student rovers are kit assemblies — they demonstrate integration, not engineering. Tortuga is built around two failure modes that have ended real Mars missions:
 
-These targets will be revised as design progresses. Every revision will be logged in the [Engineering Decisions](#engineering-decisions) section.
+1. **Inversion.** A flipped rover is a dead rover without active recovery.
+2. **Dust ingress.** Martian regolith degrades unsealed drivetrains.
+
+The goal is not to replicate JPL hardware. The goal is to take JPL-class problems, scope them to hobby budget, and document the engineering decisions — at hobby scale, in the Sonoran Desert.
 
 ---
 
-## Phased Build Plan
+## Design highlights
 
-The project is structured in phases. Each phase produces a working, demoable milestone — not a half-finished system.
-
-### Phase 1 — Drive + perceive *(Weeks 1–5)*
-- Chassis CAD complete, 3D printed
-- 4-wheel drive functional under remote control
-- Ultrasonic obstacle avoidance working
-- Raspberry Pi camera streaming over local network
-- **Milestone:** Rover drives itself around an indoor course without collisions
-
-### Phase 1.5 — The differentiators *(Weeks 6–8)*
-- Self-righting mechanism integrated
-- Sealed drivetrain components installed (labyrinth seals, sealed bearings)
-- IMU-triggered recovery sequence working
-- **Milestone:** Rover recovers from forced flips in lab conditions
-
-### Phase 2 — Field testing *(Weeks 9–10)*
-- Outdoor testing in Tucson desert terrain
-- Dust exposure protocol: run, disassemble, document wear
-- Before/after photos of drivetrain components
-- **Milestone:** Documented test results showing seal performance
-
-### Phase 3 — *(Future, post-semester)*
-- GPS waypoint navigation
-- Possibly: sample-collection gripper (MSR-inspired)
+- **Tortoise-shell chassis** — asymmetric rounded outline reduces catch points during inversion
+- **Self-righting mechanism** — single servo-driven arm, IMU-triggered recovery
+- **Sealed drivetrain** — labyrinth seals + sealed bearings for desert operation
+- **SolidWorks parametric CAD** — every dimension is driven, fully editable
+- **PETG construction** — survives Tucson summer heat (PLA would deform)
 
 ---
 
-## Engineering Decisions
+## Specs
 
-This section logs every non-trivial design decision and the reasoning behind it. It is the most important part of this document.
+| | |
+|---|---|
+| Footprint | 215mm × 160mm |
+| Ground clearance | ~40mm |
+| Drive | 4WD, TT gear motors, 80mm off-road wheels |
+| Brain | Raspberry Pi 4 (4GB) |
+| Sensors | HC-SR04 ultrasonic, MPU-6050 IMU, Pi Camera v2 |
+| Power | 3x 18650 Li-ion |
+| Target operating time | 45+ min continuous |
 
-### Decision 1: Raspberry Pi over Arduino as primary controller
-**Decision:** Raspberry Pi 4 (4GB) for main control.
-**Why:** Camera streaming and image processing are roadmap items. Arduino can drive motors but cannot stream video or run higher-level autonomy code. The Pi handles both. A microcontroller may be added later for real-time motor control if latency becomes an issue.
-**Trade-off accepted:** Higher power draw, less deterministic timing.
-
-### Decision 2: PETG over PLA for chassis and seal housings
-**Decision:** PETG for all structural and sealing parts.
-**Why:** PLA glass-transition temperature is ~60°C. A car interior in Tucson summer routinely exceeds this. PETG (~75–80°C Tg) handles desert heat. ASA would be better but is harder to print reliably on the UA student printers.
-**Trade-off accepted:** PETG is harder to print cleanly than PLA; first prints may need tuning.
-
-### Decision 3: Self-righting via deployable arm (not symmetric chassis)
-**Decision:** Single servo-driven arm that pushes the rover back upright when inverted.
-**Why:** Symmetric (operate-either-side-up) chassis was considered but doubles the design constraints — every external sensor, the camera, and the wheels would need to work in either orientation. A deployable arm isolates the complexity to one mechanism.
-**Trade-off accepted:** Single point of failure. If the servo or linkage breaks, no recovery.
-
-### Decision 4: Labyrinth seals over lip seals
-**Decision:** *(Pending — to be finalized during CAD)*
-**Why:** *(To be documented.)*
-
-Decision 5: Base plate dimensions and tortoise-shell outline
-Decision: 215mm × 160mm × 4mm PETG base plate with asymmetric oval outline — 40mm radius front corners, 30mm radius rear corners. 
-Why: Larger than initial 200×150mm estimate to accommodate righting arm mechanism, battery pack, and electronics with margin. Rounded outline reduces catch points during inversion events.
-
-Decision 6: Motor and wheel selection — medium-mode off-road
-Decision: 4× TT gear motors (3-6V, 1:48 reduction) paired with 80mm chunky-tread rubber off-road wheels. Why: TT motors are inexpensive (~$15 for 4) with adequate torque for hobby-scale off-road driving. 80mm wheels provide ~40mm ground clearance vs. ~25mm with standard 65mm wheels — meaningful improvement for Sonoran Desert terrain.
-
-Decision 7: Motor mounting pattern — 4-corner symmetric layout
-Decision: Four motors mounted on the bottom face of the base plate in a symmetric 4-corner pattern, with mounting holes at ±55mm in X and at ±70mm / ±33mm in Y (giving the required 37mm hole spacing along each motor body). Why: Symmetric 4WD layout maximizes traction on uneven terrain — all four wheels contribute drive. Motor body sits 14mm inside the plate edge, preventing edge-of-print weakness and giving room for wire routing. Wheels extend ~25mm beyond the plate sides, ensuring no chassis-to-wheel rubbing.
-
-
-*(More decisions will be added as the project progresses.)*
+Full bill of materials in [`docs/bom.md`](docs/bom.md).
 
 ---
 
-## Calculations
+## Build phases
 
-Detailed engineering calculations live in `/docs/calcs/`. Summary:
-
-- **Center of mass estimation** — *(pending)*
-- **Self-righting arm sizing** (length × torque vs. CoM offset) — *(pending)*
-- **Servo torque selection** — *(pending)*
-- **Motor torque required for 30° slope climb** — *(pending)*
-- **Bearing radial load per wheel** — *(pending)*
-- **Battery capacity vs. drive time** — *(pending)*
+| Phase | What ships | Status |
+|-------|-----------|--------|
+| 1 | Drive + obstacle avoidance + camera stream | In progress |
+| 1.5 | Self-righting + sealed drivetrain | Planned |
+| 2 | Sonoran Desert field testing + dust analysis | Planned |
+| 3 | GPS waypoint navigation, sample-collection gripper | Post-semester |
 
 ---
 
-## Bill of Materials
+## Documentation
 
-*(Finalized at end of CAD phase. Placeholder estimates below.)*
-
-| Subsystem | Component | Source | Est. Cost |
-|-----------|-----------|--------|-----------|
-| Compute | Raspberry Pi 4 (4GB) | Adafruit | $55 |
-| Compute | 32GB microSD | Amazon | $10 |
-| Drive | TT gear motors ×4 | Amazon | $15 |
-| Drive | L298N motor driver | Amazon | $8 |
-| Drive | Sealed bearings 608ZZ ×8 | Amazon | $10 |
-| Sensing | HC-SR04 ultrasonic ×3 | Amazon | $10 |
-| Sensing | Pi Camera Module v2 | Adafruit | $25 |
-| Sensing | MPU-6050 IMU | Amazon | $5 |
-| Power | 18650 cells ×3 + holder | Amazon | $20 |
-| Power | TP4056 charger | Amazon | $5 |
-| Power | 5V buck converter | Amazon | $8 |
-| Mechanism | MG996R servo | Amazon | $8 |
-| Hardware | M3 screws, standoffs, jumper wires | Amazon | $30 |
-| Hardware | PETG filament | UA printer | ~$20 |
-| **Total Phase 1 + 1.5** | | | **~$229** |
+- [Engineering decision log](docs/decisions.md) — every non-trivial design choice and the reasoning behind it
+- [Bill of materials](docs/bom.md) — components, sources, costs
+- [Build schedule](docs/Rover_Project_Plan.docx) — 10-week project plan with milestones
+- [CAD files](cad/) — SolidWorks source + STL exports, organized by subsystem
 
 ---
 
-## Repository Structure
+## Skills demonstrated
 
-```
-/cad         — Solidworks and STL exports
-/code        — Rover firmware and control scripts
-/docs        — Engineering writeups, calculations, test data
-/docs/calcs  — Hand calculations and analysis
-/docs/tests  — Test protocols and results
-/media       — Photos and demo videos
-```
-
----
-
-## Testing Protocol
-
-*(To be expanded as testing begins.)*
-
-- **Lab tests:** Indoor obstacle course, forced-flip recovery trials
-- **Field tests:** Desert terrain runs at [location TBD] near Tucson
-- **Documentation:** Photo log of drivetrain components before and after dust exposure
-
----
-
-## Skills Demonstrated
-
-*(For recruiters — updated as the project progresses.)*
-
-- Mechanical design and CAD (SolidWorks)
-- 3D printing for functional parts
-- Statics applied to real mechanism design (CoM analysis, torque calculations)
-- Electronics integration (Pi, motor drivers, sensors, power systems)
-- Embedded software (Python on Raspberry Pi)
-- Test design and field testing
-- Technical documentation
-
----
-
-## Contact
-
-Rodolfo Yanez — Mechanical Engineering, University of Arizona
+Mechanical design (SolidWorks) - Parametric CAD - 3D printing for functional parts - Statics applied to mechanism design - Electronics integration - Embedded Python - Technical documentation
