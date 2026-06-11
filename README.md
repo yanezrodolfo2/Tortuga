@@ -4,7 +4,7 @@ A self-righting, dust-tolerant scout rover designed and built as a single-semest
 
 **Author:** Rodolfo Yanez — Mechanical Engineering, University of Arizona
 **Status:** In development — Phase 1
-**Target completion:** End of Spring 2026 semester
+**Target completion:** End of Summer 2026 
 
 ---
 
@@ -89,6 +89,17 @@ This section logs every non-trivial design decision and the reasoning behind it.
 **Decision:** *(Pending — to be finalized during CAD)*
 **Why:** *(To be documented.)*
 
+Decision 5: Base plate dimensions and tortoise-shell outline
+Decision: 215mm × 160mm × 4mm PETG base plate with asymmetric oval outline — 40mm radius front corners, 30mm radius rear corners. 
+Why: Larger than initial 200×150mm estimate to accommodate righting arm mechanism, battery pack, and electronics with margin. Rounded outline reduces catch points during inversion events.
+
+Decision 6: Motor and wheel selection — medium-mode off-road
+Decision: 4× TT gear motors (3-6V, 1:48 reduction) paired with 80mm chunky-tread rubber off-road wheels. Why: TT motors are inexpensive (~$15 for 4) with adequate torque for hobby-scale off-road driving. 80mm wheels provide ~40mm ground clearance vs. ~25mm with standard 65mm wheels — meaningful improvement for Sonoran Desert terrain.
+
+Decision 7: Motor mounting pattern — 4-corner symmetric layout
+Decision: Four motors mounted on the bottom face of the base plate in a symmetric 4-corner pattern, with mounting holes at ±55mm in X and at ±70mm / ±33mm in Y (giving the required 37mm hole spacing along each motor body). Why: Symmetric 4WD layout maximizes traction on uneven terrain — all four wheels contribute drive. Motor body sits 14mm inside the plate edge, preventing edge-of-print weakness and giving room for wire routing. Wheels extend ~25mm beyond the plate sides, ensuring no chassis-to-wheel rubbing.
+
+
 *(More decisions will be added as the project progresses.)*
 
 ---
@@ -133,7 +144,7 @@ Detailed engineering calculations live in `/docs/calcs/`. Summary:
 ## Repository Structure
 
 ```
-/cad         — Fusion 360 files and STL exports
+/cad         — Solidworks and STL exports
 /code        — Rover firmware and control scripts
 /docs        — Engineering writeups, calculations, test data
 /docs/calcs  — Hand calculations and analysis
@@ -157,7 +168,7 @@ Detailed engineering calculations live in `/docs/calcs/`. Summary:
 
 *(For recruiters — updated as the project progresses.)*
 
-- Mechanical design and CAD (Fusion 360)
+- Mechanical design and CAD (SolidWorks)
 - 3D printing for functional parts
 - Statics applied to real mechanism design (CoM analysis, torque calculations)
 - Electronics integration (Pi, motor drivers, sensors, power systems)
