@@ -4,70 +4,66 @@ Design decisions made during the Tortuga build, with reasoning and trade-offs. T
 
 ---
 
-### Decision 1: Raspberry Pi over Arduino as primary controller
+Decision 1: Raspberry Pi over Arduino as primary controller
 
-**Decision:** Raspberry Pi 4 (4GB) for main control. **Why:** Camera streaming and image processing are roadmap items. Arduino can drive motors but cannot stream video or run higher-level autonomy code. The Pi handles both. A microcontroller may be added later for real-time motor control if latency becomes an issue. **Trade-off accepted:** Higher power draw, less deterministic timing.
+Decision: Raspberry Pi 4 (4GB). Why: Camera streaming and higher-level autonomy are roadmap items an Arduino can't do. The Pi handles both. Trade-off: Higher power draw, less deterministic timing than a microcontroller.
 
-### Decision 2: PETG for final parts, PLA for prototypes
+Decision 2: PETG for final parts, PLA for prototypes
 
-**Decision:** PETG for all structural and sealing parts in the final build; PLA for fit-check prototypes. **Why:** PLA glass-transition temperature is ~60°C — a car interior in Tucson summer routinely exceeds this. PETG (~75-80°C Tg) handles desert heat. PLA is cheaper, faster, and dimensionally more accurate, making it the right choice for parts that only need to verify fit and will never leave the desk. **Trade-off accepted:** Two print runs instead of one. Justified by catching design errors on cheap parts.
+Decision: PETG for final structural parts; PLA for fit-check prototypes. Why: PLA softens above ~60°C — a Tucson car interior exceeds that. PETG (~75-80°C) survives desert heat. PLA is cheaper and more accurate for verifying fit before committing. Trade-off: PETG is harder to print clean and warps more on large flat parts.
 
-### Decision 3: Self-righting via deployable arm, not symmetric chassis
+Decision 3: Self-righting via deployable arm, not symmetric chassis
 
-**Decision:** Single servo-driven arm that pushes the rover back upright when inverted. **Why:** A symmetric operate-either-side-up chassis was considered but doubles the design constraints — every external sensor, the camera, and the wheels would need to function in either orientation. A deployable arm isolates the complexity to one mechanism. **Trade-off accepted:** Single point of failure. If the servo or linkage breaks, no recovery.
+Decision: Single servo-driven arm that levers the rover upright. Why: A symmetric operate-either-way chassis doubles every constraint — sensors, camera, wheels all needing to work inverted. An arm isolates the complexity to one mechanism. Trade-off: Single point of failure; if the servo or arm breaks, no recovery.
 
-### Decision 4: Labyrinth seals over lip seals
+Decision 4: Flip detection via IMU Z-axis with a dead band
 
-**Decision:** *Pending — to be finalized during detailed drivetrain CAD.* **Why:** Seal geometry depends on final motor shaft diameter, wheel hub design, and printer tolerance testing. Will resolve once the Phase 1 drivetrain is built and dust exposure can be characterized empirically.
+Decision: MPU-6050 Z-axis acceleration determines orientation, with a ±5 m/s² dead band — above +5 upright, below −5 flipped, between is indeterminate. Why: Testing against zero causes rapid state flicker at steep angles, which would fire the arm repeatedly. The dead band forces a decisive orientation change. Sensor reads ~10-11 m/s² flat (offset from nominal 9.81 — common on cheap MPU-6050s) but sign-based detection is unaffected. Trade-off: Can't distinguish "on its side" from "mid-transition" — both handled as indeterminate.
 
-### Decision 5: Chassis dimensions and outline
+Decision 5: Chassis outline and dimensions
 
-**Decision:** 215 x 160 x 4 mm base plate, 180 x 130 x 3 mm top deck, uniform 40 mm corner fillets on both. **Why:** Rounded outline reduces catch points during inversion events, improving self-righting reliability. 215 mm length maintains margin on a 240 mm printer bed. Deck is inset 17.5 mm in X and 15 mm in Z, leaving clearance for the righting arm to swing and for wire bundles to route up from below. Front/rear orientation is defined by hole pattern — camera bracket mounts at X=20, servo mount at X=125 — rather than by external geometry. **Trade-off accepted:** No visual orientation cue from the shape; the deck must be marked to avoid assembly confusion.
+Decision: Base plate 230 × 180 × 4mm (enlarged from an initial 215 × 160), top deck 180 × 130 × 3mm, uniform 40mm corner fillets. Why: Enlarged so the body reads proportional to the 80mm wheels rather than dwarfed by them. Rounded outline reduces catch points during a flip. Front/rear defined by hole pattern, not shape, since the fillets are symmetric — the deck must be marked to avoid backwards assembly. Trade-off: 230mm is near the Prusa Core One's 240mm bed limit — prints with zero margin for error.
 
-### Decision 6: Motor and wheel selection
+Decision 6: Standoff span held constant across base plate redesigns
 
-**Decision:** 4x TT gear motors (3-6V, 1:48 reduction) with 80 mm chunky-tread rubber off-road wheels. **Why:** TT motors are inexpensive (~$15 for 4) with adequate torque for hobby-scale off-road driving. 80 mm wheels give ~40 mm ground clearance versus ~25 mm with standard 65 mm wheels — meaningful for Sonoran Desert terrain. Wheel hub fits the TT D-shaft directly, eliminating an adapter and a failure point. **Trade-off accepted:** No built-in encoders, so closed-loop speed control is not possible without a later magnetic encoder upgrade (~$10). Lower top speed than 12V motors, acceptable for a scout-class rover where torque matters more.
+Decision: Kept the 6-standoff span at 140 × 50mm even when enlarging the base plate. Why: Holding the span constant means the existing top deck still fits any base plate revision — enlarging the plate doesn't cascade into a new deck. The standoffs just sit more central on a bigger plate. Trade-off: None meaningful; this is the move that kept a resize from becoming a full redesign.
 
-### Decision 7: Motor mounting pattern — 4-corner long-axis layout
+Decision 7: 4-corner motor layout, skid steer
 
-**Decision:** Four motors in the four corners of the base plate, each motor's long axis parallel to the rover's 215 mm length. Mounting holes 37 mm apart along the length axis; shafts point outward perpendicular to travel. Front and rear motors on each side are ~103 mm apart center-to-center, giving ~23 mm clearance between wheels. **Why:** Standard rover/automotive layout — travel along the long axis, wheels on the long sides. Matches Mars rover wheelbase convention. Maximizes traction with 4WD and minimizes turning radius for skid-steer. **Trade-off accepted:** Wheel-to-wheel clearance is tight, restricting future upgrades to larger wheels without lengthening the chassis.
+Decision: Four TT motors in the corners, long axis along the rover's length, wheels on the long sides. No steering mechanism — turns by driving left and right sides at different speeds (skid steer). Why: Matches Mars rover wheelbase convention, maximizes 4WD traction, needs no steering linkage to break. Trade-off: Wheels scrub sideways in turns and it uses more power to turn than steered wheels.
 
-### Decision 8: SolidWorks over Fusion 360
+Decision 8: Motor bracket — sourced and adapted, not designed
 
-**Decision:** SolidWorks as the primary CAD environment. **Why:** SolidWorks dominates aerospace and defense engineering — Lockheed Martin, Northrop Grumman, Raytheon, Boeing, and SpaceX all use it heavily. Building fluency during a portfolio project compounds career value: every CAD hour doubles as interview preparation. Free through the UA student license. **Trade-off accepted:** Windows-only. Weaker cloud collaboration than Fusion; version control handled through GitHub commits of `.SLDPRT` files.
+Decision: Used a third-party 3D-printable TT motor bracket, modified to add mounting holes matching the base plate. Why: The TT motor's mounting holes sit on its top face at ~18-20mm spacing, which didn't match the plate's flat hole pattern. A proven bracket solves this without reinventing a standard part — time better spent on the parts that are actually mine. Trade-off: Not my original design; cited as adapted in the portfolio. (The chassis, deck, camera bracket, righting arm, and servo mount are my designs.)
 
-### Decision 9: Standoff configuration
+Decision 9: 80mm off-road wheels
 
-**Decision:** 6x M3 standoffs at 35 mm height, in a 4-corner-plus-2-mid-edge pattern. Base plate holes at X = 37.5 / 107.5 / 177.5, Z = 55 / 105. Deck holes at X = 20 / 90 / 160, Z = 40 / 90. **Why:** Four corners provide primary support; two mid-edge posts prevent deck sag under the Pi's weight. 35 mm accommodates the Pi (17 mm), battery pack (22 mm), and L298N (~20 mm) on the base plate with wire clearance. Off-the-shelf metal standoffs chosen over printed pillars for strength and dimensional precision. **Trade-off accepted:** Off-the-shelf height locks the deck spacing — changing it means re-buying hardware.
+Decision: 80mm chunky-tread rubber wheels on the TT motors. Why: ~40mm ground clearance vs ~25mm on standard 65mm wheels — meaningful for desert terrain. Tread grips loose sand. Hub fits the D-shaft directly, no adapter. Trade-off: No encoders on TT motors, so no closed-loop speed control without a later add-on. High wheel-to-body ratio drove the chassis enlargement in Decision 5.
 
-### Decision 10: Standoff hole coordinate correction (deck v4 to v5)
+Decision 10: CAD in SolidWorks
 
-**Decision:** Deck standoff holes moved from Z = 20 / 110 to Z = 40 / 90. **Why:** The original coordinates gave a 90 mm Z-span while the base plate span was 50 mm, so the plates could not stack. Caught by measuring both printed parts with the CAD Measure tool rather than by visual inspection — the mismatch was not obvious by eye. **Trade-off accepted:** One wasted prototype print of the deck. Cheap lesson: verify mating dimensions numerically across parts before printing, not after.
+Decision: SolidWorks as the CAD environment. Why: Dominant in aerospace and defense (Lockheed, Northrop, Raytheon, Boeing, SpaceX) — every CAD hour doubles as career prep. Free through UA. Trade-off: Windows-only; version control handled through GitHub commits of the source files.
 
-### Decision 11: Wire pass-through layout
+Decision 11: Two-tier layout on standoffs
 
-**Decision:** 2x diameter-10 mm pass-through holes in the top deck at X = 45 and X = 135, both on the centerline. **Why:** Two passes rather than one keeps wire runs short and separates front and rear motor wiring, making debugging easier and reducing bundling. **Trade-off accepted:** Holes weaken the deck slightly at center; mitigated by the standoff support pattern.
+Decision: Heavy components (motors, battery, driver) on the base plate; brain and sensors (Pi, IMU, camera) on a top deck raised 35mm on standoffs. Why: Keeps center of mass low, which aids stability and self-righting. Separates power wiring from signal wiring. 35mm clears the Pi, battery, and L298N below. Trade-off: Off-the-shelf standoff height locks the deck spacing.
 
-### Decision 12: Edge-mounted camera on a separate bracket
+Decision 12: Edge-mounted forward-facing camera on a separate bracket
 
-**Decision:** Pi Camera v2 mounts vertically at the front edge of the top deck via a separate L-bracket, looking horizontally forward. **Why:** Edge-mounting matches real rover and field-robot camera placement — it reads as deliberate rather than improvised — and gives an unobstructed forward field of view. A separate part isolates camera-mount iteration from the deck, so the bracket can be revised without reprinting a large plate. **Trade-off accepted:** Two parts to print and assemble instead of one; slightly less rigid than an integrated mount.
+Decision: Pi camera mounts vertically at the front edge via a dedicated L-bracket, looking forward down the rover's length. Why: Forward-facing matches real rover camera placement and gives a clear driving view. A separate bracket lets the camera mount iterate without reprinting the deck. Bracket orientation matters — mounting across two side-by-side holes would face the camera sideways, so it uses a dedicated hole placement to face forward. Trade-off: Extra part to print and align; the mount design took several revisions to fit the real camera's hole pattern.
 
-### Decision 13: Camera bracket geometry
+Decision 13: Fillet at bracket load joints
 
-**Decision:** L-bracket with a 73 x 30 x 3 mm horizontal base and a 30 x 30 x 3 mm vertical face, joined by a 4 mm fillet. Base has 2x diameter-3.2 mm bolt holes 50 mm apart, matching deck standoff holes S1 and S4. Vertical face carries 4x diameter-2.2 mm camera holes and a diameter-10 mm lens aperture. **Why:** The 50 mm bolt spacing follows directly from the corrected deck geometry. Base length of 73 mm leaves 10 mm of material past each hole — 60 mm would leave only ~3.4 mm, which cracks in printed plastic. The fillet relieves stress at the joint, which carries impact load if the rover lands nose-first during a flip, and improves layer bonding across the transition. **Trade-off accepted:** Camera hole pattern is based on published Pi Camera v2 specs rather than direct measurement; holes are diameter-2 mm in plastic and can be re-drilled by hand if the pattern is off.
+Decision: 4mm fillet where bracket bases meet vertical walls (camera bracket, servo mount). Why: Sharp inside corners concentrate stress — an impact on the vertical face during a flip loads that joint. A fillet spreads the load and improves print layer bonding across the transition. Trade-off: Negligible extra material.
 
-### Decision 14: Righting arm geometry
+Decision 14: Servo power separated from the Pi
 
-**Decision:** Straight bar, 120 x 20 x 4 mm, with semicircular caps at both ends. Pivot end has a central clearance hole for the servo horn hub plus 4 screw holes matching the stock MG996R horn. **Why:** Arm length set at approximately 0.7x the rover's short-axis dimension (160 mm x 0.7 = 112 mm) with margin. Estimated torque requirement ~9.6 kg-cm at worst case, within the MG996R's ~11 kg-cm rating at 6V. A straight bar minimizes CAD and print complexity for a first iteration. Horn fit verified against the physical servo horn — the arm seats flat with all four screws engaged. **Trade-off accepted:** No mechanical advantage from curved geometry; performance depends entirely on servo torque. Upgrade path to a curved or forked arm exists if testing shows insufficient authority.
+Decision: MG996R servo powered from the battery (via breadboard rails), never from the Pi's 5V pins — only the signal wire and a common ground connect to the Pi. Why: The servo's ~2.5A stall current would brown out or damage the Pi. Trade-off: More wiring; requires a shared-ground discipline that, if missed, makes the servo jitter.
 
-### Decision 15: Servo mount
+Decision 15: lgpio backend for stable servo control
 
-**Decision:** L-bracket bolted to the top deck at X = 125, Z = 50 / 80. Base flange 50 x 60 x 3 mm with 2x diameter-3.2 mm bolt holes 30 mm apart; vertical wall carries 4x holes matching the MG996R flange pattern and a central cutout for the servo body to pass through. 4 mm fillet at the joint. **Why:** A bracket isolates the servo from the deck, allowing it to be swapped or upgraded without reprinting a large part. Vertical mounting orients the shaft parallel to the rover's width axis so the arm sweeps in the flip plane. Rear placement keeps the electronics area clear and puts the arm's mass behind the center of mass, aiding flip dynamics. The body cutout is required — without it the servo flanges cannot seat flush against the wall. **Trade-off accepted:** Mount position at X = 125 was chosen to clear standoff holes at X = 160; the servo sits slightly inboard of the rear edge, marginally reducing the arm's reach.
+Decision: Drive the servo through gpiozero's lgpio pin factory rather than the default. Why: The default software PWM jittered; lgpio's hardware-timed signal holds steady. Combined with charged cells, this resolved a persistent servo buzz. Trade-off: A faint residual hold-buzz remains, accepted because the servo only holds briefly during a flip — it sweeps in motion, where the buzz is irrelevant.
 
-### Decision 16: Power architecture
+Decision 16: Phased build, three-wave parts ordering
 
-**Decision:** 2-cell 18650 pack (7.4V nominal) supplying motors through the L298N and the servo through a dedicated rail. The Pi runs on its own regulated supply. All grounds tied common. **Why:** A 3-cell pack (11.1V) exceeds the TT motors' 3-6V rating even after the L298N's ~2V internal drop; 2 cells land motors in-spec. The MG996R draws up to ~2.5A at stall, far beyond what the Pi's 5V rail can source — powering it from the Pi would brown out or damage the board, so the servo takes battery-side power with only its signal wire on GPIO. Common ground is required for signal reference across all three subsystems. **Trade-off accepted:** Reduced battery capacity versus a 3-cell pack. An LM2596 buck converter is planned to allow the 3-cell pack with a regulated 6V motor rail in a later revision.
-
-### Decision 17: Flip detection threshold
-
-**Decision:** Rover orientation determined from MPU-6050 Z-axis acceleration with a plus/minus 5 m/s-squared dead band — above +5 is upright, below -5 is inverted, between is indeterminate. **Why:** Testing against zero would cause rapid state oscillation at steep angles, repeatedly triggering the righting mechanism. The dead band requires a decisive orientation change before a state transition. Measured Z reads ~10-11 m/s-squared when flat, above the nominal 9.81 due to sensor offset, which does not affect sign-based detection. **Trade-off accepted:** The rover cannot distinguish "on its side" from "mid-transition" — both fall in the dead band and are handled as indeterminate.
+Decision: Build in phases (self-righting demo first, driving later), order parts in waves (compute and tools, then drivetrain and sensors after the chassis was verified, then future-phase parts). Why: Prioritizing the self-righting demo produces the strongest single portfolio artifact fastest. Ordering after chassis verification caps the cost of a design error. Trade-off: Slower overall; a blocked subsystem can idle work.
