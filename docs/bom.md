@@ -60,13 +60,5 @@ Estimated Phase 1 + 1.5 component costs. Final list locked in at end of CAD phas
 | Phase 3 (future) | $50 |
 | **Total project envelope** | **~$366** |
 
-Project budget cap: $300–$500. Phase 1 + 1.5 alone fits within budget with ~$50 cushion for failed components (expect to lose 1–2 parts as a first-time builder). Phase 3 is post-semester scope and not part of the initial budget.
+Project budget cap: $300–$500. Phase 1 + 1.5 alone fits within budget with ~$50 cushion for failed components (expected to lose 1–2 parts as a first-time builder). Phase 3 is post-semester scope and not part of the initial budget.
 
----
-
-## Sourcing notes
-
-- **Avoid Arduino-branded boards.** 2–3× markup vs. clones with identical functionality.
-- **Verify TT motor + wheel hub compatibility before ordering.** Some 80mm wheels ship without the D-shaft adapter and require a separate coupling.
-- **Order PETG in advance.** UA makerspace stocks PLA reliably but PETG availability is inconsistent.
-- **Buffer for failures.** First electronics build expects 1–2 fried components from reverse polarity or wrong voltage. Budget includes this — do not skip the buffer.
